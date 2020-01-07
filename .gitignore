@@ -2,6 +2,7 @@
 *.json
 *.p12
 *.config
+*.conf
 *.yaml
 *.war
 *.js
