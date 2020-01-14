@@ -39,7 +39,7 @@ ARG PROJECT_ID
 ENV DEBIAN_FRONTEND noninteractive
 ## instal td-agent 
 RUN apt -y install ruby-full
-RUN apt-get install -y net-tools
+RUN apt-get install -y net-tools gnupg2
 RUN ruby --version
 RUN curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent2.5.sh | sh 
 RUN /usr/sbin/td-agent-gem install fluent-plugin-bigquery -v 0.4.4
