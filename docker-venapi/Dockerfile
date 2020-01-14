@@ -28,9 +28,12 @@ RUN curl -O http://apache.stu.edu.tw/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8
 RUN tar xvfz apache*.tar.gz
 RUN mv apache-tomcat-8.5.50/* /opt/tomcat/.
 RUN java -version
+RUN rm -rf /opt/tomcat/webapps/docs/; \
+    rm -rf /opt/tomcat/webapps/examples/; \
+    rm -rf /opt/tomcat/webapps/host-manager/; \
+    rm -rf /opt/tomcat/webapps/manager/; \
+    rm -rf /opt/tomcat/webapps/ROOT/;
 
-RUN mkdir /opt/tomcat/js
-RUN mkdir /opt/tomcat/js/current/
 WORKDIR /opt/tomcat/webapps
 COPY venapis.war /opt/tomcat/webapps
 COPY venraaspt.min.js /opt/tomcat/webapps/js/current/
@@ -64,9 +67,15 @@ RUN mkdir /opt/memstore-client
 WORKDIR /opt/memstore-client
 COPY memstore-client /opt/memstore-client
 RUN pip install -r requirements.txt
+RUN touch /opt/tomcat/logs/data
+
+# Ubuntu packages
+RUN apt-get clean && \ 
+    rm -rf /var/lib/apt/lists/*
 
 ### restart service 
 CMD /etc/init.d/td-agent restart; \
-    /opt/tomcat/bin/catalina.sh run; \
-    python /opt/memstore-client/json2ms.py -ttl 2592000 -d /opt/tomcat/logs/data weblog tail;
+    python /opt/memstore-client/json2ms.py -ttl 2592000 -d /opt/tomcat/logs/data weblog tail; \
+    /opt/tomcat/bin/catalina.sh run; 
+
 
