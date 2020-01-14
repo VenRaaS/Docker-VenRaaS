@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-LABEL INSTANCE_TYPE="venapis"
+LABEL INSTANCE_TYPE="recapi"
 MAINTAINER robin.rsu@gmail.com
 
 RUN apt-get update && \
@@ -7,12 +7,6 @@ RUN apt-get update && \
 ## install openJDK
 RUN apt-get update && \
     apt-get -y install openjdk-8-jdk
-## install Python
-RUN apt-get install -y python3-pip python3-dev \
-    && cd /usr/local/bin \
-    && ln -s /usr/bin/python3 python \
-    && ln -s /usr/bin/pip3 pip \
-    && pip3 install --upgrade pip
 
 # environment
 ENV DEBIAN_FRONTEND noninteractive
@@ -20,7 +14,6 @@ RUN apt-get -y install tzdata
 ENV TZ="Asia/Taipei"
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
-
 
 ENV TOMCAT_VERSION 8.5.50
 ENV CATALINA_HOME /opt/tomcat
@@ -36,9 +29,7 @@ RUN rm -rf $CATALINA_HOME/webapps/docs/; \
     rm -rf $CATALINA_HOME/webapps/manager/; \
     rm -rf $CATALINA_HOME/webapps/ROOT/;
 ## install venapis.war
-COPY venapis.war $CATALINA_HOME/webapps
-COPY venraaspt.min.js $CATALINA_HOME/webapps/js/current/
-COPY venraaspt.min.js $CATALINA_HOME/webapps/js
+COPY cupid.war $CATALINA_HOME/webapps
 
 EXPOSE 8080
 
@@ -60,23 +51,10 @@ COPY service_account_key.p12 /etc/td-agent/service_account_key.p12
 COPY td-agent.conf /etc/td-agent/td-agent.conf
 COPY filter_weblog.rb /etc/td-agent/plugin/
 
-## install json2ms.py
-RUN mkdir /opt/memstore-client
-WORKDIR /opt/memstore-client
-COPY memstore-client /opt/memstore-client
-RUN pip install -r requirements.txt
-RUN touch $CATALINA_HOME/logs/data
-
-#RUN chown -R root:td-agent $CATALINA_HOME/logs
-#RUN chmod -R 775 $CATALINA_HOME/logs/
-
 # Ubuntu packages
 RUN apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
 ### restart service 
-CMD sed -i 's/^TD_AGENT_USER=td-agent/TD_AGENT_USER=root/g' /etc/init.d/td-agent && /etc/init.d/td-agent restart; \
-    python /opt/memstore-client/json2ms.py -ttl 2592000 -d /opt/tomcat/logs/data weblog tail; \
+CMD sed -i 's/^TD_AGENT_USER=td-agent/TD_AGENT_USER=root/g' /etc/init.d/td-agent && /etc/init.d/td-agent restart;  \
     /opt/tomcat/bin/catalina.sh run; 
-
-
