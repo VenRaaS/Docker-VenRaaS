@@ -40,17 +40,22 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 ## install elasticsearch
-RUN groupadd elk && useradd -g elk -m -d /home/elk elk
-USER elk
-RUN mkdir -p /home/elk/elk/
-COPY elasticsearch-2.3.3.tar.gz /home/elk/elk/
-WORKDIR /home/elk/elk/
-RUN tar -xvf elasticsearch-2.3.3.tar.gz
-COPY elasticsearch.yml /home/elk/elk/elasticsearch-2.3.3/config/
-#RUN export ES_HEAP_SIZE=1g; /home/elk/elk/elasticsearch-2.3.3/bin/elasticsearch -d
+RUN groupadd -g 1000 elk && \
+    adduser --uid 1000 --gid 1000 --home /home/elk --disabled-password --gecos '' elk 
+COPY elasticsearch-2.3.3.tar.gz /home/elk/
+WORKDIR /home/elk/
+RUN tar -xvf elasticsearch-2.3.3.tar.gz && \
+    rm elasticsearch-2.3.3.tar.gz && \
+    chmod 0775 /home/elk/elasticsearch-2.3.3    
+COPY elasticsearch.yml /home/elk/elasticsearch-2.3.3/config/
+
+ENV ELASTIC_CONTAINER true
+ENV ES_HEAP_SIZE=1g
+
+EXPOSE 9200 9300
 
 USER root
 
-CMD export ES_HEAP_SIZE=1g;  /home/elk/elk/elasticsearch-2.3.3/bin/elasticsearch -d; \ 
+CMD export ES_HEAP_SIZE=1g;  /home/elk/elasticsearch-2.3.3/bin/elasticsearch -d; \ 
     $CATALINA_HOME/bin/catalina.sh run;
 

@@ -74,8 +74,9 @@ RUN touch $CATALINA_HOME/logs/data
 RUN apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
+RUN sed -i 's/^TD_AGENT_USER=td-agent/TD_AGENT_USER=root/g' /etc/init.d/td-agent
 ### restart service 
-CMD sed -i 's/^TD_AGENT_USER=td-agent/TD_AGENT_USER=root/g' /etc/init.d/td-agent && /etc/init.d/td-agent restart; \
+CMD /etc/init.d/td-agent restart; \
     python /opt/memstore-client/json2ms.py -ttl 2592000 -d /opt/tomcat/logs/data weblog tail; \
     /opt/tomcat/bin/catalina.sh run; 
 

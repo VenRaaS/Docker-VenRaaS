@@ -55,6 +55,9 @@ COPY filter_weblog.rb /etc/td-agent/plugin/
 RUN apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
+RUN sed -i 's/^TD_AGENT_USER=td-agent/TD_AGENT_USER=root/g' /etc/init.d/td-agent
+
 ### restart service 
-CMD sed -i 's/^TD_AGENT_USER=td-agent/TD_AGENT_USER=root/g' /etc/init.d/td-agent && /etc/init.d/td-agent restart;  \
+CMD /etc/init.d/td-agent restart;  \
     /opt/tomcat/bin/catalina.sh run; 
+
