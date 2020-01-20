@@ -34,7 +34,7 @@ RUN rm $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
 COPY --chown=elk:root template_hermes.json $ES_HOME/elasticsearch-2.3.3/_template/
 COPY --chown=elk:root template_venraas.json $ES_HOME/elasticsearch-2.3.3/_template/
 
-RUN sudo sysctl -w vm.max_map_count=262144
+#RUN sudo sysctl -w vm.max_map_count=262144
 RUN echo "cluster.name: hermes-cluster" >> $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
 RUN echo "network.host: 0.0.0.0" >> $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
 #RUN echo "index.query.bool.max_clause_count: 16384" >> $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
@@ -48,4 +48,7 @@ ENV ELASTIC_CONTAINER true
 ENV ES_HEAP_SIZE=1g
 
 ENTRYPOINT $ES_HOME/elasticsearch-2.3.3/bin/elasticsearch 
+
+HEALTHCHECK --interval=10m --timeout=3s \
+  CMD curl -f http://localhost:9200/_cat/health || exit 1
 
