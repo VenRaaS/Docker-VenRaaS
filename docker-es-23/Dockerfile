@@ -18,7 +18,7 @@ RUN apt-get update && \
     apt-get clean
 
 ENV ES_VERSION=2.3.3
-ENV ES_HOME=/home/elk/
+ENV ES_HOME=/home/elk
 
 RUN groupadd elk
 RUN useradd -g elk -m -d $ES_HOME elk
@@ -30,14 +30,22 @@ RUN tar -xvf elasticsearch-2.3.3.tar.gz && \
     rm elasticsearch-2.3.3.tar.gz && \
     chmod 0775 $ES_HOME/elasticsearch-2.3.3    
 
+RUN rm $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml 
 COPY --chown=elk:root template_hermes.json $ES_HOME/elasticsearch-2.3.3/_template/
 COPY --chown=elk:root template_venraas.json $ES_HOME/elasticsearch-2.3.3/_template/
 
+RUN sudo sysctl -w vm.max_map_count=262144
+RUN echo "cluster.name: hermes-cluster" >> $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
+RUN echo "network.host: 0.0.0.0" >> $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
+#RUN echo "index.query.bool.max_clause_count: 16384" >> $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
+#RUN echo "index.max_result_window: 2147483647" >> $ES_HOME/elasticsearch-2.3.3/config/elasticsearch.yml
+
+EXPOSE 9200 9300-9400
+
 USER elk
 
-ENV vm.max_map_count=262144
 ENV ELASTIC_CONTAINER true
 ENV ES_HEAP_SIZE=1g
 
-CMD $ES_HOME/elasticsearch-2.3.3/bin/elasticsearch 
+ENTRYPOINT $ES_HOME/elasticsearch-2.3.3/bin/elasticsearch 
 

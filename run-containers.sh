@@ -27,6 +27,14 @@ docker run -it -d --name ${container_name} \
     -v es-data1:/usr/share/elasticsearch/data \
     -p 9200:9200 -p 9300:9300 ${image_name} 
 
+image_name="venraas/es-23"
+container_name="es-233" 
+docker run -it -d --name ${container_name} \
+    -e "discovery.type=single-node" \
+    --ulimit nofile=65535:65535 \
+    --ulimit memlock=-1:-1 \
+    -p 9200:9200 -p 9300-9400:9300-9400 ${image_name} 
+
 image_name="venraas/hermes"
 container_name="hermes-1" 
 DOMAIN_SUFFIX="venraas.private"
