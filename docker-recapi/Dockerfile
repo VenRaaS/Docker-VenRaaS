@@ -3,10 +3,12 @@ LABEL INSTANCE_TYPE="recapi"
 MAINTAINER robin.rsu@gmail.com
 
 RUN apt-get update && \
-    apt-get -y install sudo wget curl
+    apt-get -y install sudo wget curl && \
+    apt-get clean
 ## install openJDK
 RUN apt-get update && \
-    apt-get -y install openjdk-8-jdk
+    apt-get -y install openjdk-8-jdk && \
+    apt-get clean
 
 # environment
 ENV DEBIAN_FRONTEND noninteractive
@@ -20,7 +22,7 @@ ENV CATALINA_HOME /opt/tomcat
 RUN mkdir -p "$CATALINA_HOME"
 
 WORKDIR $CATALINA_HOME
-RUN curl -O http://apache.stu.edu.tw/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
+RUN curl -O http://ftp.mirror.tw/pub/apache/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
 RUN tar xvfz apache*.tar.gz && \
     mv apache-tomcat-8.5.50/* $CATALINA_HOME/.
 RUN rm -rf $CATALINA_HOME/webapps/docs/; \
@@ -33,13 +35,12 @@ COPY cupid.war $CATALINA_HOME/webapps
 
 EXPOSE 8080
 
-ARG PROJECT_ID
-
 # environment
 ENV DEBIAN_FRONTEND noninteractive
 ## instal td-agent 
-RUN apt -y install ruby-full
-RUN apt-get install -y net-tools gnupg2
+RUN apt -y install ruby-full && \
+    apt-get install -y net-tools gnupg2 && \
+    apt-get clean
 RUN ruby --version
 RUN curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent2.5.sh | sh 
 RUN /usr/sbin/td-agent-gem install fluent-plugin-bigquery -v 0.4.4
@@ -60,4 +61,7 @@ RUN sed -i 's/^TD_AGENT_USER=td-agent/TD_AGENT_USER=root/g' /etc/init.d/td-agent
 ### restart service 
 CMD /etc/init.d/td-agent restart;  \
     /opt/tomcat/bin/catalina.sh run; 
+
+HEALTHCHECK --interval=10m --timeout=3s \
+  CMD curl -f http://localhost:8080/cupid/health || exit 1
 

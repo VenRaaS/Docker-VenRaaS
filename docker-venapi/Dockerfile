@@ -3,16 +3,19 @@ LABEL INSTANCE_TYPE="venapis"
 MAINTAINER robin.rsu@gmail.com
 
 RUN apt-get update && \
-    apt-get -y install sudo wget curl
+    apt-get -y install sudo wget curl && \
+    apt-get clean
 ## install openJDK
 RUN apt-get update && \
-    apt-get -y install openjdk-8-jdk
+    apt-get -y install openjdk-8-jdk && \
+    apt-get clean
 ## install Python
 RUN apt-get install -y python3-pip python3-dev \
     && cd /usr/local/bin \
     && ln -s /usr/bin/python3 python \
     && ln -s /usr/bin/pip3 pip \
-    && pip3 install --upgrade pip
+    && pip3 install --upgrade pip \
+    && apt-get clean
 
 # environment
 ENV DEBIAN_FRONTEND noninteractive
@@ -27,7 +30,7 @@ ENV CATALINA_HOME /opt/tomcat
 RUN mkdir -p "$CATALINA_HOME"
 
 WORKDIR $CATALINA_HOME
-RUN curl -O http://apache.stu.edu.tw/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
+RUN curl -O http://ftp.mirror.tw/pub/apache/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
 RUN tar xvfz apache*.tar.gz && \
     mv apache-tomcat-8.5.50/* $CATALINA_HOME/.
 RUN rm -rf $CATALINA_HOME/webapps/docs/; \
@@ -47,8 +50,9 @@ ARG PROJECT_ID
 # environment
 ENV DEBIAN_FRONTEND noninteractive
 ## instal td-agent 
-RUN apt -y install ruby-full
-RUN apt-get install -y net-tools gnupg2
+RUN apt -y install ruby-full && \
+    apt-get install -y net-tools gnupg2 && \
+    apt-get clean
 RUN ruby --version
 RUN curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent2.5.sh | sh 
 RUN /usr/sbin/td-agent-gem install fluent-plugin-bigquery -v 0.4.4
@@ -80,4 +84,6 @@ CMD /etc/init.d/td-agent restart; \
     python /opt/memstore-client/json2ms.py -ttl 2592000 -d /opt/tomcat/logs/data weblog tail; \
     /opt/tomcat/bin/catalina.sh run; 
 
+HEALTHCHECK --interval=10m --timeout=3s \
+  CMD curl -f http://localhost:8080/venapis/alive || exit 1
 
