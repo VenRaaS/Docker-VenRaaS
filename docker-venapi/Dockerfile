@@ -17,13 +17,13 @@ RUN apt-get install -y python3-pip python3-dev \
     && pip3 install --upgrade pip \
     && apt-get clean
 
-# environment
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -y install tzdata
+## Change TimeZone
 ENV TZ="Asia/Taipei"
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get -y install tzdata && \
+    apt-get clean
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
-
 
 ENV TOMCAT_VERSION 8.5.50
 ENV CATALINA_HOME /opt/tomcat

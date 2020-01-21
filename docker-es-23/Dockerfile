@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 LABEL INSTANCE_TYPE="es-2.3.3"
 MAINTAINER robin.rsu@gmail.com
 
-# environment
+## Change TimeZone
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get -y install tzdata && \

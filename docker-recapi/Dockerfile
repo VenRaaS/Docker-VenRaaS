@@ -10,10 +10,11 @@ RUN apt-get update && \
     apt-get -y install openjdk-8-jdk && \
     apt-get clean
 
-# environment
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -y install tzdata
+## Change TimeZone
 ENV TZ="Asia/Taipei"
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get -y install tzdata && \
+    apt-get clean
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 

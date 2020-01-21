@@ -1,4 +1,4 @@
-FROM postgres:9.6.16-alpine
+FROM postgres:9.3-alpine
 MAINTAINER robinsu "robin.rsu@gmail.com"
 
 ## Change TimeZone
