@@ -1,0 +1,35 @@
+#!/bin/bash
+# $1: codename
+# $2: username
+# $3: password
+# $4: company token
+
+echo "codename: $1"
+echo "username: $2"
+echo "password: $3"
+echo "token: $4"
+
+HOSTNAME="postgresql-1"
+USERNAME="$2"
+
+echo "$HOSTNAME:*:*:$USERNAME:$3" > $HOME/.pgpass
+chmod 0600 $HOME/.pgpass
+
+URL_CUPID_API="https://apir.pcloud.tw/cupid/api/goods/rank"
+echo -e "\nregister channel for $1, $4"
+sh /usr/share/tomcat/dhermes_init_regs/register.sh -t="$4" -cn="$1" -uca="${URL_CUPID_API}" 2>&1
+
+sh install_bq.sh "$1"
+
+echo -e "\ncreatedb $1_edm"
+createdb -h $HOSTNAME -U $USERNAME -e "$1_edm" 2>&1
+pg_restore -h $HOSTNAME -U $USERNAME -c -d $1_edm itri_edm.backup 2>&1
+
+echo -e "\ncreatedb $1_unima"
+createdb -h $HOSTNAME -U $USERNAME -e "$1_unima" 2>&1
+pg_restore -h $HOSTNAME -U $USERNAME -c -d $1_unima itri_unima.backup 2>&1
+
+echo -e "\ncreatedb $1_upg"
+createdb -h $HOSTNAME -U $USERNAME -e "$1_upg" 2>&1
+pg_restore -h $HOSTNAME -U $USERNAME -c -d $1_unima itri_upg.backup 2>&1
+
