@@ -29,14 +29,15 @@ docker run -it -d --name ${container_name} \
 
 image_name="venraas/es-23"
 container_name="es-233"
-ES_DATA="$(pwd)/es-data1"
+ES_DATA="/media/es-data1"
 chmod g+rwx $ES_DATA
-chgrp 1000 $ES_DATA
+chown 1000 -R $ES_DATA
+chgrp 1000 -R $ES_DATA
 docker run -it -d --name ${container_name} \
     -e "discovery.type=single-node" \
     --ulimit nofile=65535:65535 \
     --ulimit memlock=-1:-1 \
-    -v "$(pwd)"/es-data1:/home/elk/elasticsearch-2.3.3/data \
+    -v /media/es-data1:/home/elk/elasticsearch-2.3.3/data \
     -p 9200:9200 -p 9300-9400:9300-9400 ${image_name}
 
 image_name="venraas/postgres:9.3"
