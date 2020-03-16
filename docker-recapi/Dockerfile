@@ -23,7 +23,7 @@ ENV CATALINA_HOME /opt/tomcat
 RUN mkdir -p "$CATALINA_HOME"
 
 WORKDIR $CATALINA_HOME
-RUN curl -O http://ftp.mirror.tw/pub/apache/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
+RUN curl -O RUN curl -O https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
 RUN tar xvfz apache*.tar.gz && \
     mv apache-tomcat-8.5.50/* $CATALINA_HOME/.
 RUN rm -rf $CATALINA_HOME/webapps/docs/; \
