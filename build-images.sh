@@ -27,6 +27,10 @@ image_name="venraas/hermes"
 docker build -t ${image_name}  . \
     --build-arg PROJECT_ID="$GCP_PROJECT_ID"
 
-
+GCP_PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
+## build docker image
+image_name="venraas/raaspv"
+docker build -t ${image_name}  . \
+    --build-arg PROJECT_ID="$GCP_PROJECT_ID"
 
 
