@@ -30,7 +30,7 @@ ENV CATALINA_HOME /opt/tomcat
 RUN mkdir -p "$CATALINA_HOME"
 
 WORKDIR $CATALINA_HOME
-RUN curl -O http://ftp.tc.edu.tw/pub/Apache/tomcat/tomcat-7/v7.0.99/bin/apache-tomcat-7.0.99.tar.gz
+RUN curl -O https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
 COPY apache-tomcat-7.0.99.tar.gz $CATALINA_HOME
 RUN tar xvfz apache*.tar.gz && \
     mv apache-tomcat-7.0.99/* $CATALINA_HOME/.
