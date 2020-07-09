@@ -25,7 +25,7 @@ RUN mkdir -p "$CATALINA_HOME"
 WORKDIR $CATALINA_HOME
 RUN curl -O https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
 RUN tar xvfz apache*.tar.gz && \
-    mv apache-tomcat-8.5.51/* $CATALINA_HOME/.
+    mv apache-tomcat-8.5.50/* $CATALINA_HOME/.
 RUN rm -rf $CATALINA_HOME/webapps/docs/; \
     rm -rf $CATALINA_HOME/webapps/examples/; \
     rm -rf $CATALINA_HOME/webapps/host-manager/; \
