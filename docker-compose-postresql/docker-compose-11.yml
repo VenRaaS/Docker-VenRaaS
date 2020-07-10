@@ -6,6 +6,8 @@ services:
       - "5432:5432"
     env_file:
       - database.env # configure postgres
+    environment:
+        TZ: "Asia/Taipei"  
     volumes:
             - /media/postgres-data/postgres/main/data:/var/lib/postgresql/data # persist data even if container shuts down
 
